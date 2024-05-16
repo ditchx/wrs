@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: lamp-web
+    volumes:
+      - ./www:/var/www/html
+    ports:
+      - "8080:80"
+    networks:
+      - lamp-network
+
+  db:
+    image: mysql:5.7
+    container_name: lamp-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wrs
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+    networks:
+      - lamp-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "8081:80"
+    networks:
+      - lamp-network
+
+networks:
+  lamp-network:
+    driver: bridge
+
